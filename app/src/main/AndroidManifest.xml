@@ -1,5 +1,7 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.cookandroide.pikaboka">
 
+    <!-- 권한 -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
@@ -10,6 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PikaBoka">
+
+        <!-- 메인 액티비티: 앱 런처 -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -18,5 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- 서브 액티비티: 내부 호출용, 외부 앱에서는 호출 안됨 -->
+        <activity
+            android:name=".HandwritingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SpeechActivity"
+            android:exported="false" />
+
     </application>
 </manifest>

@@ -1,156 +1,70 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootContainer"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/white"
-    android:padding="16dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="12dp">
-
-        <Button
-            android:id="@+id/btnShowPronunciation"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="발음 평가"
-            android:backgroundTint="@color/green"
-            android:textColor="@android:color/white"
-            android:layout_marginEnd="8dp"/>
-
-        <Button
-            android:id="@+id/btnShowHandwriting"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="손글씨 평가"
-            android:backgroundTint="@color/green"
-            android:textColor="@android:color/white"
-            android:layout_marginStart="8dp"/>
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:id="@+id/pronunciationLayout"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/pronunciationTargetText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="말할 문장: 안녕하세요"
-                android:textSize="24sp"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="24dp"/>
-
-            <Button
-                android:id="@+id/recordButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="발음 시작"
-                android:backgroundTint="@color/orange"
-                android:textColor="@android:color/white"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/handwritingLayout"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/targetKanaText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="손글씨를 입력하세요"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="12dp"/>
-
-            <FrameLayout
-                android:id="@+id/canvasContainer"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@drawable/canvas_border"
-                android:layout_marginBottom="12dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <Button
-                    android:id="@+id/clearCanvasButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="지우기"
-                    android:backgroundTint="#9E9E9E"
-                    android:textColor="@android:color/white"
-                    android:layout_marginEnd="12dp"/>
-
-                <Button
-                    android:id="@+id/evaluateHandwritingButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="손글씨 평가"
-                    android:backgroundTint="@color/orange"
-                    android:textColor="@android:color/white"/>
-            </LinearLayout>
-
-            <ProgressBar
-                android:id="@+id/progressEvaluating"
-                style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:indeterminate="true"
-                android:visibility="gone"
-                android:layout_marginTop="8dp"/>
-
-            <TextView
-                android:id="@+id/top3Text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:paddingTop="8dp"
-                android:text="Top-3 결과"/>
-        </LinearLayout>
-    </FrameLayout>
+    tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/resultText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textColor="@android:color/black"
-        android:gravity="center"
-        android:layout_marginTop="12dp"/>
-
-    <Button
-        android:id="@+id/saveCanvasButton"
+        android:id="@+id/appTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="PNG 저장"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center_horizontal"/>
-</LinearLayout>
+        android:text="PikaBoka"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="64dp"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardSpeech"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:layout_constraintTop_toBottomOf="@id/appTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSpeech"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🎤 발음 평가"
+            android:textSize="18sp"
+            android:padding="24dp"
+            android:backgroundTint="@color/purple_500"
+            android:textColor="@android:color/white"
+            app:cornerRadius="24dp"/>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardHandwriting"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:layout_constraintTop_toBottomOf="@id/cardSpeech"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHandwriting"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="✍ 손글씨 평가"
+            android:textSize="18sp"
+            android:padding="24dp"
+            android:backgroundTint="@color/teal_700"
+            android:textColor="@android:color/white"
+            app:cornerRadius="24dp"/>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

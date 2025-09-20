@@ -1,67 +1,87 @@
-package com.cookandroide.pikaboka
+package com.cookandroide.pikaboka.views
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import kotlin.math.min
 
-class DrawingView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+class DrawingView @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null
+) : View(context, attrs) {
 
-    private val path = Path()
     private val paint = Paint().apply {
-        color = Color.WHITE
-        style = Paint.Style.STROKE
-        strokeWidth = 60f
-        strokeCap = Paint.Cap.ROUND
-        strokeJoin = Paint.Join.ROUND
+        color = Color.BLACK
         isAntiAlias = true
+        strokeWidth = 24f
+        style = Paint.Style.STROKE
+        strokeJoin = Paint.Join.ROUND
+        strokeCap = Paint.Cap.ROUND
     }
 
-    private var bitmap: Bitmap? = null
-    private var canvasBitmap: Canvas? = null
+    private val path = Path()
+    private var drawBitmap: Bitmap? = null
+    private var drawCanvas: Canvas? = null
 
     init {
-        setBackgroundColor(Color.BLACK)
+        // 배경이 투명하지 않도록 하려면 여기 설정
+        setBackgroundColor(Color.WHITE)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        val size = min(w, h) // 정사각형 고정
-        bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        canvasBitmap = Canvas(bitmap!!)
+        if (w > 0 && h > 0) {
+            drawBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+            drawCanvas = Canvas(drawBitmap!!)
+            drawCanvas?.drawColor(Color.WHITE)
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        bitmap?.let { canvas.drawBitmap(it, 0f, 0f, null) }
+        drawBitmap?.let { canvas.drawBitmap(it, 0f, 0f, null) }
         canvas.drawPath(path, paint)
     }
 
+    private var lastX = 0f
+    private var lastY = 0f
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val x = event.x.coerceIn(0f, (bitmap?.width ?: width).toFloat())
-        val y = event.y.coerceIn(0f, (bitmap?.height ?: height).toFloat())
+        val x = event.x
+        val y = event.y
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> path.moveTo(x, y)
-            MotionEvent.ACTION_MOVE -> path.lineTo(x, y)
+            MotionEvent.ACTION_DOWN -> {
+                path.moveTo(x, y)
+                lastX = x
+                lastY = y
+                return true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                path.quadTo(lastX, lastY, (x + lastX) / 2, (y + lastY) / 2)
+                lastX = x
+                lastY = y
+            }
             MotionEvent.ACTION_UP -> {
-                canvasBitmap?.drawPath(path, paint)
+                path.lineTo(x, y)
+                // 그려진 경로를 비트맵 캔버스에 고정
+                drawCanvas?.drawPath(path, paint)
                 path.reset()
             }
+            else -> return false
         }
         invalidate()
         return true
     }
 
     fun clear() {
-        bitmap?.eraseColor(Color.BLACK)
+        drawCanvas?.drawColor(Color.WHITE)
+        path.reset()
         invalidate()
     }
 
-    fun getBitmap(): Bitmap {
-        // 원본 캔버스 비트맵 그대로 반환
-        return bitmap ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    fun getBitmap(): Bitmap? {
+        // 반환할 때 원본 크기 비트맵을 복사해서 제공
+        return drawBitmap?.copy(Bitmap.Config.ARGB_8888, false)
     }
 }
