@@ -25,7 +25,29 @@ class DrawingView @JvmOverloads constructor(
 
     init {
         // 배경이 투명하지 않도록 하려면 여기 설정
-        setBackgroundColor(Color.WHITE)
+        setBackgroundColor(Color.BLACK)
+    }
+
+    fun getProcessedInput(): FloatArray {
+        val src = getBitmap() ?: return FloatArray(28 * 28)
+        val resized = Bitmap.createScaledBitmap(src, 28, 28, true)
+        val floatArray = FloatArray(28 * 28)
+
+        for (y in 0 until 28) {
+            for (x in 0 until 28) {
+                val pixel = resized.getPixel(x, y)
+                val r = Color.red(pixel)
+                val g = Color.green(pixel)
+                val b = Color.blue(pixel)
+                val gray = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
+
+                // 색 반전 (학습 데이터: 검은 배경 + 흰 글씨)
+                val inverted = 255 - gray
+
+                floatArray[y * 28 + x] = inverted / 255.0f
+            }
+        }
+        return floatArray
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
