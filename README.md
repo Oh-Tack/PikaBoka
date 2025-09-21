@@ -33,16 +33,20 @@
    - `app/src/main/assets/` 경로에 `k49_cnn.tflite` 파일 배치.  
 
 3. **의존성**
+
    `build.gradle`에 다음 의존성이 포함되어야 합니다:
    ```gradle
    implementation 'com.microsoft.cognitiveservices.speech:client-sdk:1.34.0'
    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
 
 4. **권한**
+
     앱 실행 시 마이크 권한(RECORD_AUDIO) 허용 필요.
 
 **주요 파일 설명**
+
     *Kotlin 파일*
+
         MainActivity.kt
         앱 메인 화면. 발음 평가와 손글씨 평가 메뉴로 이동하는 버튼 제공.
 
@@ -59,6 +63,7 @@
         공통 기능 제공 (버튼 클릭 시 애니메이션 효과).
 
     *레이아웃 파일*
+
         activity_main.xml
         앱 타이틀과 발음 평가 / 손글씨 평가 버튼 UI.
 
@@ -69,6 +74,7 @@
         손글씨 평가 화면 UI. 문제 표시, 캔버스 영역(DrawingView), 평가/지우기/다음 문제/뒤로가기 버튼 포함.
 
 **프로젝트 구조**
+
     app/src/main/java/com/cookandroide/pikaboka/
     ├─ MainActivity.kt
     ├─ SpeechActivity.kt
