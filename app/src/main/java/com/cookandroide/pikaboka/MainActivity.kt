@@ -1,13 +1,15 @@
 package com.cookandroide.pikaboka
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import androidx.core.app.ActivityOptionsCompat
 import com.google.android.material.button.MaterialButton
 
 class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main) // 업로드하신 activity_main.xml 사용. :contentReference[oaicite:8]{index=8}
+        setContentView(R.layout.activity_main)
 
         val btnSpeech = findViewById<MaterialButton>(R.id.btnSpeech)
         val btnHandwriting = findViewById<MaterialButton>(R.id.btnHandwriting)
@@ -16,12 +18,35 @@ class MainActivity : BaseActivity() {
         addButtonClickEffect(btnHandwriting)
 
         btnSpeech.setOnClickListener {
-            startActivity(Intent(this, SpeechActivity::class.java))
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            val intent = Intent(this, SpeechActivity::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                val options = ActivityOptionsCompat.makeCustomAnimation(
+                    this,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+                )
+                startActivity(intent, options.toBundle())
+            } else {
+                startActivity(intent)
+                @Suppress("DEPRECATION")
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            }
         }
+
         btnHandwriting.setOnClickListener {
-            startActivity(Intent(this, HandwritingActivity::class.java))
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+            val intent = Intent(this, HandwritingActivity::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                val options = ActivityOptionsCompat.makeCustomAnimation(
+                    this,
+                    android.R.anim.slide_in_left,
+                    android.R.anim.slide_out_right
+                )
+                startActivity(intent, options.toBundle())
+            } else {
+                startActivity(intent)
+                @Suppress("DEPRECATION")
+                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+            }
         }
     }
 }
