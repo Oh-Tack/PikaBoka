@@ -38,14 +38,14 @@ class MainActivity : BaseActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 val options = ActivityOptionsCompat.makeCustomAnimation(
                     this,
-                    android.R.anim.slide_in_left,
-                    android.R.anim.slide_out_right
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
                 )
                 startActivity(intent, options.toBundle())
             } else {
                 startActivity(intent)
                 @Suppress("DEPRECATION")
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             }
         }
     }
