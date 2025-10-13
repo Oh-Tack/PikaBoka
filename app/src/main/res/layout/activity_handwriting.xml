@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
@@ -114,5 +115,16 @@
             android:text="➡ 다음 문제"
             app:cornerRadius="24dp"/>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/previewImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="#EEEEEE"
+        android:contentDescription="전처리 결과 미리보기"
+        android:scaleType="fitCenter"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="499dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

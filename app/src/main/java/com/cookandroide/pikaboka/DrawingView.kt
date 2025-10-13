@@ -13,7 +13,7 @@ class DrawingView @JvmOverloads constructor(
     private val paint = Paint().apply {
         color = Color.BLACK
         isAntiAlias = true
-        strokeWidth = 24f
+        strokeWidth = 40f
         style = Paint.Style.STROKE
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND

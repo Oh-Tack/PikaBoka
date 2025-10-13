@@ -30,6 +30,9 @@
         <activity
             android:name=".SpeechActivity"
             android:exported="false" />
+        <activity
+            android:name=".ConversationActivity"
+            android:exported="false" />
 
     </application>
 </manifest>

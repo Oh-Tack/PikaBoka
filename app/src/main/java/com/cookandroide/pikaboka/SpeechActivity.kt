@@ -3,10 +3,8 @@ package com.cookandroide.pikaboka
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.cookandroide.pikaboka.databinding.ActivitySpeechBinding
@@ -15,24 +13,27 @@ import com.microsoft.cognitiveservices.speech.audio.AudioConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import kotlin.random.Random
+
+data class Sentence(
+    val textJa: String,
+    val pronunciation: String,
+    val translation: String
+)
 
 class SpeechActivity : BaseActivity() {
 
-    private val AZURE_SPEECH_KEY = "YOUR_AZURE_SPEECH_KEY"
-    private val AZURE_SERVICE_REGION = "YOUR_AZURE_SERVICE_REGION"
-
-    private val sentences = listOf(
-        "안녕하세요",
-        "저는 학생입니다",
-        "오늘 날씨가 좋네요",
-        "발음을 연습해봅시다"
-    )
-
-    private var currentSentence: String = "안녕하세요" // 현재 평가할 문장
-    private var speechRecognizer: SpeechRecognizer? = null
-    private var isEvaluating = false
+    private val AZURE_SPEECH_KEY = "key"
+    private val AZURE_SERVICE_REGION = "key"
 
     private lateinit var binding: ActivitySpeechBinding
+    private var sentences: List<Sentence> = emptyList()
+    private var currentSentence: Sentence? = null
+    private var speechRecognizer: SpeechRecognizer? = null
+    private var isEvaluating = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,20 +43,10 @@ class SpeechActivity : BaseActivity() {
         addButtonClickEffect(binding.recordButton)
         addButtonClickEffect(binding.btnBack)
 
-        // 뒤로가기 버튼
         binding.btnBack.setOnClickListener {
             finish()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                val options = ActivityOptionsCompat.makeCustomAnimation(
-                    this,
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out
-                )
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-            } else {
-                @Suppress("DEPRECATION")
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-            }
+            @Suppress("DEPRECATION")
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
 
         // 마이크 권한 요청
@@ -64,54 +55,74 @@ class SpeechActivity : BaseActivity() {
                 if (!granted) binding.resultText.text = "마이크 권한이 필요합니다."
             }
 
-        if (!checkPermission()) {
-            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        }
+        if (!checkPermission()) permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
 
-        // 평가할 문장을 미리 랜덤 선택
+        // JSON에서 문장 불러오기
+        sentences = loadSentencesFromAssets()
         pickRandomSentence()
 
         // 발음 시작 버튼
         binding.recordButton.setOnClickListener {
-            if (!checkPermission()) {
-                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-            } else {
-                startSpeechRecognition()
-            }
+            if (!checkPermission()) permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            else startSpeechRecognition()
         }
 
         resetUI()
     }
 
-    private fun checkPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+    private fun checkPermission(): Boolean =
+        ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
                 PackageManager.PERMISSION_GRANTED
+
+    private fun loadSentencesFromAssets(): List<Sentence> {
+        val list = mutableListOf<Sentence>()
+        try {
+            val inputStream = assets.open("sentences.json")
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            val jsonStr = reader.readText()
+            val jsonArray = JSONArray(jsonStr)
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                list.add(
+                    Sentence(
+                        textJa = obj.getString("textJa"),
+                        pronunciation = obj.getString("pronunciation"),
+                        translation = obj.getString("translation")
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return list
     }
 
-    // 랜덤 문장 선택 및 화면에 표시
     private fun pickRandomSentence() {
-        currentSentence = sentences.random()
-        binding.targetSentence.text = currentSentence
+        if (sentences.isEmpty()) return
+        currentSentence = sentences[Random.nextInt(sentences.size)]
+        currentSentence?.let {
+            binding.targetSentence.text = "${it.textJa}\n(${it.pronunciation})\n${it.translation}"
+        }
     }
 
     private fun startSpeechRecognition() {
-        if (isEvaluating) return
-
+        if (isEvaluating || currentSentence == null) return
         isEvaluating = true
-        updateUIRecordingState(currentSentence)
+        updateUIRecordingState()
 
         lifecycleScope.launch {
             try {
                 val result = withContext(Dispatchers.IO) {
-                    val speechConfig = SpeechConfig.fromSubscription(AZURE_SPEECH_KEY, AZURE_SERVICE_REGION)
+                    val speechConfig =
+                        SpeechConfig.fromSubscription(AZURE_SPEECH_KEY, AZURE_SERVICE_REGION)
                     val audioConfig = AudioConfig.fromDefaultMicrophoneInput()
                     val assessmentConfig = PronunciationAssessmentConfig(
-                        currentSentence,
+                        currentSentence!!.textJa,
                         PronunciationAssessmentGradingSystem.HundredMark,
                         PronunciationAssessmentGranularity.Phoneme,
                         true
                     )
-                    speechRecognizer = SpeechRecognizer(speechConfig, "ko-KR", audioConfig)
+                    speechRecognizer = SpeechRecognizer(speechConfig, "ja-JP", audioConfig)
                     assessmentConfig.applyTo(speechRecognizer)
                     speechRecognizer!!.recognizeOnceAsync().get()
                 }
@@ -119,13 +130,17 @@ class SpeechActivity : BaseActivity() {
                 if (result.reason == ResultReason.RecognizedSpeech) {
                     val assessmentResult = PronunciationAssessmentResult.fromResult(result)
                     val accuracyScore = assessmentResult.accuracyScore
+
                     val comment = when {
                         accuracyScore >= 80 -> "잘했어요! 🎉"
                         accuracyScore >= 60 -> "조금 더 연습해보세요 😅"
                         else -> "다시 시도해보세요 🔄"
                     }
+
                     binding.resultText.text =
-                        "결과: ${result.text}\n정확도: %.2f점\n$comment".format(accuracyScore)
+                        "문장: ${currentSentence!!.textJa}\n발음: ${currentSentence!!.pronunciation}\n인식: ${result.text}\n정확도: %.2f점\n$comment".format(
+                            accuracyScore
+                        )
 
                     val scoreColor = when {
                         accuracyScore >= 80 -> ContextCompat.getColor(this@SpeechActivity, R.color.green)
@@ -143,13 +158,12 @@ class SpeechActivity : BaseActivity() {
                 binding.resultText.setTextColor(Color.parseColor("#F44336"))
             } finally {
                 resetUI()
-                // 평가 후 다음 문장 랜덤 선택
                 pickRandomSentence()
             }
         }
     }
 
-    private fun updateUIRecordingState(currentSentence: String) {
+    private fun updateUIRecordingState() {
         binding.recordButton.isEnabled = false
         binding.recordButton.text = "🎤 인식 중..."
         binding.recordButton.setBackgroundColor(ContextCompat.getColor(this, R.color.purple_500))

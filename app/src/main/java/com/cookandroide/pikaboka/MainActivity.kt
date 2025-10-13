@@ -13,9 +13,11 @@ class MainActivity : BaseActivity() {
 
         val btnSpeech = findViewById<MaterialButton>(R.id.btnSpeech)
         val btnHandwriting = findViewById<MaterialButton>(R.id.btnHandwriting)
+        val btnConversation = findViewById<MaterialButton>(R.id.btnConversation)
 
         addButtonClickEffect(btnSpeech)
         addButtonClickEffect(btnHandwriting)
+        addButtonClickEffect(btnConversation)
 
         btnSpeech.setOnClickListener {
             val intent = Intent(this, SpeechActivity::class.java)
@@ -35,6 +37,22 @@ class MainActivity : BaseActivity() {
 
         btnHandwriting.setOnClickListener {
             val intent = Intent(this, HandwritingActivity::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                val options = ActivityOptionsCompat.makeCustomAnimation(
+                    this,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+                )
+                startActivity(intent, options.toBundle())
+            } else {
+                startActivity(intent)
+                @Suppress("DEPRECATION")
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            }
+        }
+
+        btnConversation.setOnClickListener {
+            val intent = Intent(this, ConversationActivity::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 val options = ActivityOptionsCompat.makeCustomAnimation(
                     this,

@@ -2,9 +2,7 @@ package com.cookandroide.pikaboka
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.os.Build
 import android.os.Bundle
-import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.lifecycleScope
 import com.cookandroide.pikaboka.databinding.ActivityHandwritingBinding
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +15,7 @@ import java.nio.ByteOrder
 class HandwritingActivity : BaseActivity() {
 
     private lateinit var binding: ActivityHandwritingBinding
+
     private lateinit var tflite: Interpreter
     private var currentIndex: Int = -1
 
@@ -46,19 +45,9 @@ class HandwritingActivity : BaseActivity() {
 
         // 백버튼
         binding.btnBack.setOnClickListener {
-            finish() // 기존 onBackPressedDispatcher 대신 finish 사용
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                val options = ActivityOptionsCompat.makeCustomAnimation(
-                    this,
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out
-                )
-                // finish()에는 startActivity처럼 옵션을 바로 넣을 수 없으므로 overridePendingTransition 사용
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-            } else {
-                @Suppress("DEPRECATION")
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-            }
+            finish()
+            @Suppress("DEPRECATION")
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
 
         // 모델 로드
@@ -71,6 +60,7 @@ class HandwritingActivity : BaseActivity() {
         // 버튼 이벤트
         binding.clearButton.setOnClickListener {
             binding.drawView.clear()
+            binding.previewImage.setImageBitmap(null)
             binding.resultText.text = ""
         }
 
@@ -90,6 +80,7 @@ class HandwritingActivity : BaseActivity() {
         binding.handwritingTitle.text = "이 글자를 써보세요: ${labelMap[currentIndex]}"
         binding.drawView.clear()
         binding.resultText.text = ""
+        binding.previewImage.setImageBitmap(null)
     }
 
     private fun evaluateHandwriting() {
@@ -99,13 +90,19 @@ class HandwritingActivity : BaseActivity() {
 
         lifecycleScope.launch {
             try {
-                val input = withContext(Dispatchers.Default) {
+                val (floatArray, previewBitmap) = withContext(Dispatchers.Default) {
                     getProcessedInput(binding.drawView)
                 }
 
+                // 미리보기 표시
+                withContext(Dispatchers.Main) {
+                    binding.previewImage.setImageBitmap(previewBitmap)
+                }
+
+                // 입력 버퍼 생성
                 val inputBuffer = ByteBuffer.allocateDirect(4 * 1 * 28 * 28)
                 inputBuffer.order(ByteOrder.nativeOrder())
-                for (v in input) inputBuffer.putFloat(v)
+                for (v in floatArray) inputBuffer.putFloat(v)
                 inputBuffer.rewind()
 
                 val output = Array(1) { FloatArray(labelMap.size) }
@@ -132,25 +129,67 @@ class HandwritingActivity : BaseActivity() {
         }
     }
 
-    /** 캔버스 이미지를 28x28 흑백 float 배열로 변환 */
-    private fun getProcessedInput(drawView: com.cookandroide.pikaboka.views.DrawingView): FloatArray {
-        val bitmap = Bitmap.createBitmap(drawView.width, drawView.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
+    /** 캔버스 이미지를 28x28 float 배열 + 미리보기 Bitmap으로 변환 */
+    private fun getProcessedInput(drawView: com.cookandroide.pikaboka.views.DrawingView): Pair<FloatArray, Bitmap> {
+        val srcBitmap = Bitmap.createBitmap(drawView.width, drawView.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(srcBitmap)
         drawView.draw(canvas)
 
-        val scaled = Bitmap.createScaledBitmap(bitmap, 28, 28, true)
-        val floatArray = FloatArray(28 * 28)
+        // 글자 영역 검출
+        var minX = srcBitmap.width
+        var minY = srcBitmap.height
+        var maxX = 0
+        var maxY = 0
+        for (y in 0 until srcBitmap.height) {
+            for (x in 0 until srcBitmap.width) {
+                val pixel = srcBitmap.getPixel(x, y)
+                val gray = (0.299 * ((pixel shr 16) and 0xFF) +
+                        0.587 * ((pixel shr 8) and 0xFF) +
+                        0.114 * (pixel and 0xFF))
+                if (gray < 200) {
+                    if (x < minX) minX = x
+                    if (y < minY) minY = y
+                    if (x > maxX) maxX = x
+                    if (y > maxY) maxY = y
+                }
+            }
+        }
 
+        if (minX >= maxX || minY >= maxY) {
+            return Pair(FloatArray(28 * 28), srcBitmap)
+        }
+
+        // 자르기 및 패딩 추가
+        val cropped = Bitmap.createBitmap(
+            srcBitmap,
+            minX.coerceAtLeast(0),
+            minY.coerceAtLeast(0),
+            (maxX - minX).coerceAtMost(srcBitmap.width - minX),
+            (maxY - minY).coerceAtMost(srcBitmap.height - minY)
+        )
+
+        val size = maxOf(cropped.width, cropped.height)
+        val padded = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val padCanvas = Canvas(padded)
+        padCanvas.drawColor(android.graphics.Color.WHITE)
+        val left = (size - cropped.width) / 2f
+        val top = (size - cropped.height) / 2f
+        padCanvas.drawBitmap(cropped, left, top, null)
+
+        // 28x28 축소
+        val scaled = Bitmap.createScaledBitmap(padded, 28, 28, true)
+
+        // float 배열 변환
+        val floatArray = FloatArray(28 * 28)
         for (y in 0 until 28) {
             for (x in 0 until 28) {
                 val pixel = scaled.getPixel(x, y)
-                val gray = (0.299 * ((pixel shr 16) and 0xFF) +
-                        0.587 * ((pixel shr 8) and 0xFF) +
-                        0.114 * (pixel and 0xFF)).toFloat() / 255f
+                val gray = (pixel and 0xFF) / 255f
                 floatArray[y * 28 + x] = 1f - gray
             }
         }
-        return floatArray
+
+        return Pair(floatArray, padded)
     }
 
     override fun onDestroy() {

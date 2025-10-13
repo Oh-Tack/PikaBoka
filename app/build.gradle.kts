@@ -4,7 +4,7 @@ plugins {
 }
 android {
     namespace = "com.cookandroide.pikaboka"
-    compileSdk = 34  // 최신 AndroidX 라이브러리 호환 위해 34~35 가능
+    compileSdk = 35  // 최신 AndroidX 라이브러리 호환 위해 34~35 가능
 
     defaultConfig {
         applicationId = "com.cookandroide.pikaboka_v100_alpha"
@@ -37,9 +37,11 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.13.1")
+    // AndroidX 호환 버전 (compileSdk 34용)
+    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.core:core:1.15.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.activity:activity-ktx:1.9.2")
+    implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
@@ -60,4 +62,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+
+    implementation("com.squareup.okhttp3:okhttp:4.11.0") // WebSocket
+    implementation("com.microsoft.cognitiveservices.speech:client-sdk:1.30.0") // Azure Speech
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
 }
