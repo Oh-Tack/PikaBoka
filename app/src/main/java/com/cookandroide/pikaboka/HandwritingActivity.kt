@@ -29,7 +29,7 @@ class HandwritingActivity : BaseActivity() {
         "ま","み","む","め","も",
         "や","ゆ","よ",
         "ら","り","る","れ","ろ",
-        "わ","を","ん","ゝ","ゞ","ゑ"
+        "わ","を","ん","ゝ","ん","ゑ"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +51,7 @@ class HandwritingActivity : BaseActivity() {
         }
 
         // 모델 로드
-        val modelBytes = assets.open("k49_cnn.tflite").readBytes()
+        val modelBytes = assets.open("k49_cnn_best.tflite").readBytes()
         val buffer = ByteBuffer.allocateDirect(modelBytes.size)
         buffer.order(ByteOrder.nativeOrder())
         buffer.put(modelBytes)
@@ -76,7 +76,7 @@ class HandwritingActivity : BaseActivity() {
     }
 
     private fun nextQuestion() {
-        currentIndex = (0 until labelMap.size).random()
+        currentIndex = (0 until labelMap.size-3).random()
         binding.handwritingTitle.text = "이 글자를 써보세요: ${labelMap[currentIndex]}"
         binding.drawView.clear()
         binding.resultText.text = ""
@@ -112,7 +112,7 @@ class HandwritingActivity : BaseActivity() {
                 val predicted = probs.indices.maxByOrNull { probs[it] } ?: -1
                 val confidence = probs[predicted] * 100
 
-                val message = if (predicted == currentIndex) {
+                val message = if (predicted == currentIndex || (predicted == 47 && currentIndex == 45)) {
                     "✅ 정답! (${labelMap[currentIndex]})\n신뢰도: ${"%.2f".format(confidence)}%"
                 } else {
                     "❌ 오답!\n제시된 글자: ${labelMap[currentIndex]}\n인식: ${labelMap[predicted]}\n신뢰도: ${"%.2f".format(confidence)}%"
