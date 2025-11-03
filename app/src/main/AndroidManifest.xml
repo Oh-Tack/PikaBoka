@@ -1,21 +1,24 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cookandroide.pikaboka">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- 권한 -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo_round"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PikaBoka">
+        android:theme="@style/Theme.PikaBoka"
+        android:forceDarkAllowed="false">
 
         <!-- 메인 액티비티: 앱 런처 -->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -25,13 +28,22 @@
 
         <!-- 서브 액티비티: 내부 호출용, 외부 앱에서는 호출 안됨 -->
         <activity
-            android:name=".HandwritingActivity"
+            android:name=".ui.handwriting.HandwritingActivity"
             android:exported="false" />
         <activity
-            android:name=".SpeechActivity"
+            android:name=".ui.speech.SpeechActivity"
             android:exported="false" />
         <activity
-            android:name=".ConversationActivity"
+            android:name=".ui.conversation.ConversationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.vocab.VocabActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.speech.SpeechCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.speech.SpeechSentenceListActivity"
             android:exported="false" />
 
     </application>

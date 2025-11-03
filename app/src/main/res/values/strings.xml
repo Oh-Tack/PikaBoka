@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">PikaBoka</string>
+    <string name="nav_back">뒤로가기</string>
+    <string name="choose_sentence">카테고리</string>
+    <string name="press_to_start">발음 시작을 눌러 평가하세요</string>
 </resources>

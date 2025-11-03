@@ -7,7 +7,15 @@
     <color name="blue">#2196F3</color>
     <color name="green">#4CAF50</color>
     <color name="orange">#FF9800</color>
-    <color name="red">#F44336</color>
+    <color name="red">#FF0200</color>
     <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
     <color name="light_gray">#D3D3D3</color>
+    <color name="amber_500">#FFC107</color>
+    <color name="toolbar_primary">#6C63FF</color>
+    <color name="feature_vocab">#F4C026</color>
+    <color name="feature_speech">#00BFA6</color>
+    <color name="feature_handwriting">#FF8A65</color>
+    <color name="feature_conversation">#29B6F6</color>
+    <color name="conversation_soft">#A0A0A0</color>
 </resources>

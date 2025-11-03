@@ -1,10 +1,20 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+
 android {
     namespace = "com.cookandroide.pikaboka"
-    compileSdk = 35  // 최신 AndroidX 라이브러리 호환 위해 34~35 가능
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.cookandroide.pikaboka_v100_alpha"
@@ -12,9 +22,15 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "AZURE_SPEECH_KEY", "\"${localProperties["AZURE_SPEECH_KEY"]}\"")
+        buildConfigField("String", "AZURE_SERVICE_REGION", "\"${localProperties["AZURE_SERVICE_REGION"]}\"")
+        buildConfigField("String", "WEATHER_API_KEY", "\"${localProperties["WEATHER_API_KEY"]}\"")
+        buildConfigField("String", "ngrok", "\"${localProperties["ngrok"]}\"")
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     buildTypes {
         release {
@@ -66,4 +82,28 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0") // WebSocket
     implementation("com.microsoft.cognitiveservices.speech:client-sdk:1.30.0") // Azure Speech
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
+
+    // ExoPlayer
+    implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
+
+    // Retrofit + Moshi
+    implementation ("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation ("com.squareup.retrofit2:converter-moshi:2.11.0")
+
+    // OkHttp 로깅
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    implementation ("com.squareup.moshi:moshi-kotlin:1.15.1")
+    implementation ("com.squareup.moshi:moshi:1.15.1")
+
+    // Room
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+
+    // Weather
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation ("org.json:json:20210307")
+
 }

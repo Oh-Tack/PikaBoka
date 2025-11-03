@@ -1,8 +1,11 @@
 <resources>
-    <style name="Theme.PikaBoka" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize your theme here -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_500</item>
-        <item name="colorSecondary">@color/teal_700</item>
+    <style name="Theme.PikaBoka" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- 항상 밝은 테마 유지 -->
+        <item name="colorPrimary">@color/toolbar_primary</item>
+        <item name="colorPrimaryVariant">@color/toolbar_primary</item>
+        <item name="colorSecondary">@color/toolbar_primary</item>
+
+        <!-- 강제 다크모드 차단 (Android 10 이상) -->
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 </resources>
