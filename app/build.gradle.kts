@@ -17,11 +17,11 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.cookandroide.pikaboka_v100_alpha"
+        applicationId = "com.cookandroide.pikaboka"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "2.0"
 
         buildConfigField("String", "AZURE_SPEECH_KEY", "\"${localProperties["AZURE_SPEECH_KEY"]}\"")
         buildConfigField("String", "AZURE_SERVICE_REGION", "\"${localProperties["AZURE_SERVICE_REGION"]}\"")
@@ -80,7 +80,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
     implementation("com.squareup.okhttp3:okhttp:4.11.0") // WebSocket
-    implementation("com.microsoft.cognitiveservices.speech:client-sdk:1.30.0") // Azure Speech
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
 
     // ExoPlayer
@@ -103,7 +102,5 @@ dependencies {
 
     // Weather
     implementation ("com.google.android.gms:play-services-location:21.0.1")
-    implementation ("com.squareup.okhttp3:okhttp:4.10.0")
     implementation ("org.json:json:20210307")
-
 }

@@ -49,7 +49,7 @@
                 android:layout_height="40dp"
                 android:contentDescription="@null"
                 app:tint="@android:color/white"
-                android:src="@drawable/ic_wb_sunny_24"/>
+                android:src="@drawable/ic_cloud_off_24"/>
 
             <!-- 텍스트 -->
             <LinearLayout
@@ -63,7 +63,7 @@
                     android:id="@+id/txtWeatherTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="도쿄"
+                    android:text="Loading..."
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:textColor="@android:color/white"/>
@@ -73,7 +73,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="맑음 · 24℃ / 체감 23℃"
+                    android:text=""
                     android:textSize="14sp"
                     android:textColor="@android:color/white"
                     android:alpha="0.95"/>

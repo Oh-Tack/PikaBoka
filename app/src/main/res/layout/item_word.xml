@@ -17,14 +17,12 @@
         android:paddingHorizontal="14dp"
         android:paddingVertical="10dp">
 
-        <!-- 1줄차: 단어 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <!-- 일본어 -->
             <TextView
                 android:id="@+id/tvJp"
                 android:layout_width="0dp"
@@ -34,9 +32,8 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
-                android:paddingEnd="10dp"/>
+                android:paddingEnd="10dp" />
 
-            <!-- 발음 듣기 -->
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btnSpeak"
                 android:layout_width="32dp"
@@ -44,9 +41,8 @@
                 android:padding="4dp"
                 android:contentDescription="발음 듣기"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_media_play"/>
+                android:src="@android:drawable/ic_media_play" />
 
-            <!-- 즐겨찾기 -->
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btnFavorite"
                 android:layout_width="32dp"
@@ -55,10 +51,9 @@
                 android:contentDescription="즐겨찾기"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_star_blanked"
-                app:tint="@color/gray"/>
+                app:tint="@color/gray" />
         </LinearLayout>
 
-        <!-- 2줄차: 히라가나 + 뜻 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:text="がっこう"
                 android:textSize="14sp"
-                android:textColor="#666"/>
+                android:textColor="#666" />
 
             <TextView
                 android:id="@+id/tvMeaning"
@@ -80,8 +75,16 @@
                 android:text="학교"
                 android:textSize="14sp"
                 android:textColor="#444"
-                android:layout_marginStart="12dp"/>
+                android:layout_marginStart="12dp" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/tvRomaji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="gakkou"
+            android:textSize="13sp"
+            android:textColor="#888"
+            android:layout_marginTop="2dp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -61,6 +61,9 @@ class VocabActivity : BaseActivity() {
         binding.rvWords.layoutManager = LinearLayoutManager(this)
         binding.rvWords.adapter = adapter
 
+        // 인덱스 클릭 리스너 설정
+        setupKanaIndexListeners()
+
         // 최초 1회 시드
         lifecycleScope.launch { seedFromAssetsIfNeeded() }
 
@@ -84,7 +87,7 @@ class VocabActivity : BaseActivity() {
         observeJob = lifecycleScope.launch {
             val flow = if (showFavOnly) dao.getFavoritesFlow() else dao.getAllFlow()
             flow.collectLatest { list ->
-                val ui = list.map { e -> WordUi(e.id, e.jp, e.kana, e.mean, e.isFavorite) }
+                val ui = list.map { e -> WordUi(e.id, e.jp, e.kana, e.mean, e.romaji, e.isFavorite) }
                 adapter.submitList(ui) // ListAdapter 표준 API
             }
         }
@@ -113,12 +116,14 @@ class VocabActivity : BaseActivity() {
                         val idxJp   = headers.indexOfFirst { it in setOf("jp","japanese","word","original","term","kanji") }
                         val idxKana = headers.indexOfFirst { it in setOf("kana","furigana","reading","yomi","ruby") }
                         val idxMean = headers.indexOfFirst { it in setOf("mean","meaning","english","translation","ko","kor","korean") }
+                        val idxRomaji = headers.indexOfFirst { it in setOf("pron","romaji","pronunciation") }
                         val idxFav  = headers.indexOfFirst { it in setOf("favorite","fav","isfavorite","star","bookmark","liked") }
 
                         // 3) 폴백
                         val finalIdxJp   = if (idxJp   >= 0) idxJp   else 0.coerceAtMost(headers.lastIndex)
                         val finalIdxKana = if (idxKana >= 0) idxKana else 1.coerceAtMost(headers.lastIndex)
                         val finalIdxMean = if (idxMean >= 0) idxMean else 2.coerceAtMost(headers.lastIndex)
+                        val finalIdxRomaji = if (idxRomaji >= 0) idxRomaji else 3.coerceAtMost(headers.lastIndex)
                         val finalIdxFav  = idxFav
 
                         fun ensureValid(i: Int, name: String) {
@@ -130,7 +135,8 @@ class VocabActivity : BaseActivity() {
                         }
                         ensureValid(finalIdxJp,   "jp/original")
                         ensureValid(finalIdxKana, "kana/furigana")
-                        ensureValid(finalIdxMean, "mean/english")
+                        ensureValid(finalIdxMean, "mean/ko")
+                        ensureValid(finalIdxRomaji, "pron/romaji")
 
                         // 4) 데이터 파싱
                         var line: String?
@@ -144,6 +150,7 @@ class VocabActivity : BaseActivity() {
                             val jp   = col(finalIdxJp);   if (jp.isEmpty()) continue
                             val kana = col(finalIdxKana)
                             val mean = col(finalIdxMean)
+                            val pron = col(finalIdxRomaji)
 
                             val favRaw = if (finalIdxFav >= 0) col(finalIdxFav) else ""
                             val fav = favRaw.equals("1", true) ||
@@ -151,7 +158,7 @@ class VocabActivity : BaseActivity() {
                                     favRaw.equals("y", true) ||
                                     favRaw.equals("yes", true)
 
-                            items += WordEntity(jp = jp, kana = kana, mean = mean, isFavorite = fav)
+                            items += WordEntity(jp = jp, kana = kana, mean = mean, romaji = pron, isFavorite = fav)
                         }
                     }
                 }
@@ -226,6 +233,38 @@ class VocabActivity : BaseActivity() {
         }
     }
 
+    /** 인덱스 클릭 시 해당 위치로 스크롤 */
+    private fun setupKanaIndexListeners() {
+        val kanaMap = mapOf(
+            binding.indexA to listOf("あ", "い", "う", "え", "お"),
+            binding.indexKa to listOf("か", "き", "く", "け", "こ"),
+            binding.indexSa to listOf("さ", "し", "す", "せ", "そ"),
+            binding.indexTa to listOf("た", "ち", "つ", "て", "と"),
+            binding.indexNa to listOf("な", "に", "ぬ", "ね", "の"),
+            binding.indexHa to listOf("は", "ひ", "ふ", "へ", "ほ"),
+            binding.indexMa to listOf("ま", "み", "む", "め", "も"),
+            binding.indexYa to listOf("や", "ゆ", "よ"),
+            binding.indexRa to listOf("ら", "り", "る", "れ", "ろ"),
+            binding.indexWa to listOf("わ", "を", "ん")
+        )
+
+        kanaMap.forEach { (view, kanaGroup) ->
+            view.setOnClickListener {
+                val list = adapter.currentList
+                if (list.isEmpty()) return@setOnClickListener
+
+                val targetIndex = list.indexOfFirst { word ->
+                    val k = word.kana
+                    !k.isNullOrEmpty() && kanaGroup.any { ch -> k.startsWith(ch) }
+                }
+
+                if (targetIndex >= 0) {
+                    val lm = binding.rvWords.layoutManager as? LinearLayoutManager
+                    lm?.scrollToPositionWithOffset(targetIndex, 0)
+                }
+            }
+        }
+    }
 
     override fun onPause() { super.onPause(); AudioPlayer.pause() }
     override fun onStop() { super.onStop(); AudioPlayer.pause() }

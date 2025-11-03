@@ -37,6 +37,7 @@ class VocabAdapter(
             tvJp.text = w.jp
             tvKana.text = w.kana
             tvMeaning.text = w.mean
+            tvRomaji.text = w.romaji
 
             btnFavorite.setImageResource(
                 if (w.isFavorite) R.drawable.ic_star_filled

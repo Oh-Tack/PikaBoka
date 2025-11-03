@@ -101,9 +101,10 @@ class ConversationActivity : BaseActivity() {
                             binding.tvJapanese.text = "$ja\n"
                             binding.tvKorean.text = ko
 
-                            stopRecordingVisuals() // 인식 종료 시 복구
-                            binding.btnSpeak.isEnabled = true
+                            setBackDisabled(false)
                             isRecording = false
+                            binding.btnBack.isEnabled = true
+                            binding.btnBack.alpha = 1f
                         }
 
                         playBase64Audio(audioBase64)
@@ -169,9 +170,10 @@ class ConversationActivity : BaseActivity() {
             isRecording = false
         } finally {
             recognizer?.close()
+            binding.tvKorean.text = "생각 중..."
             setBackDisabled(false)
-            binding.btnBack.isEnabled = true
-            binding.btnBack.alpha = 1f
+            stopRecordingVisuals()
+            binding.btnSpeak.alpha = 0.4f
         }
     }
 

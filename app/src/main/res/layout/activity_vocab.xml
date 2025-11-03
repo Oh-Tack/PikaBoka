@@ -22,13 +22,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- 헤더 내용 배치용 -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/headerContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- 뒤로가기 -->
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btnBack"
                 android:layout_width="48dp"
@@ -38,15 +35,12 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/nav_back"
                 android:padding="10dp"
-                android:importantForAccessibility="yes"
                 app:srcCompat="@android:drawable/ic_menu_revert"
                 app:tint="@android:color/white"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
 
-            <!-- 중앙 영역: 아이콘 + 타이틀 -->
             <LinearLayout
-                android:id="@+id/centerGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -60,22 +54,18 @@
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     app:srcCompat="@android:drawable/ic_input_get"
-                    app:tint="@android:color/white"
-                    android:contentDescription="@string/app_name"/>
+                    app:tint="@android:color/white"/>
 
                 <TextView
-                    android:id="@+id/tvHeaderTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="단어 연습"
                     android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:accessibilityHeading="true"/>
+                    android:textColor="@android:color/white"/>
 
                 <TextView
-                    android:id="@+id/tvHeaderSub"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="자주 쓰이는 단어를 익혀보세요"
@@ -84,7 +74,6 @@
                     android:textColor="@android:color/white"/>
             </LinearLayout>
 
-            <!-- 즐겨찾기 토글 -->
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switchFavorites"
                 android:layout_width="wrap_content"
@@ -105,11 +94,113 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:paddingHorizontal="12dp"
+        android:paddingBottom="12dp"
         android:clipToPadding="false"
         tools:listitem="@layout/item_word"
         app:layout_constraintTop_toBottomOf="@id/headerCard"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toStartOf="@id/kanaIndexBar"
+
+        android:scrollbars="vertical"
+        android:scrollbarDefaultDelayBeforeFade="1500"
+        android:scrollbarThumbVertical="@drawable/scrollbar"/>
+
+    <!-- 히라가나 인덱스 바 -->
+    <LinearLayout
+        android:id="@+id/kanaIndexBar"
+        android:layout_width="32dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/bg_kana_index_bar"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="4dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintTop_toTopOf="@id/rvWords"
+        app:layout_constraintBottom_toBottomOf="@id/rvWords"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- 각 인덱스를 TextView로 나열 -->
+        <TextView
+            android:id="@+id/indexA"
+            style="@style/KanaIndexItem"
+            android:text="あ"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/indexKa"
+            style="@style/KanaIndexItem"
+            android:text="か"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/indexSa"
+            style="@style/KanaIndexItem"
+            android:text="さ"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/indexTa"
+            style="@style/KanaIndexItem"
+            android:text="た"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/indexNa"
+            style="@style/KanaIndexItem"
+            android:text="な"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/indexHa"
+            style="@style/KanaIndexItem"
+            android:text="は"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/indexMa"
+            style="@style/KanaIndexItem"
+            android:text="ま"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/indexYa"
+            style="@style/KanaIndexItem"
+            android:text="や"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/indexRa"
+            style="@style/KanaIndexItem"
+            android:text="ら"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/indexWa"
+            style="@style/KanaIndexItem"
+            android:text="わ"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:paddingVertical="2dp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

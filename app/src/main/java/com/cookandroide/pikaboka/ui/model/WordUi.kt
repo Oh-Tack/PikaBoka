@@ -5,5 +5,6 @@ data class WordUi(
     val jp: String,
     val kana: String,
     val mean: String,
-    val isFavorite: Boolean
+    val romaji: String,
+    val isFavorite: Boolean,
 )
