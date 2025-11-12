@@ -100,17 +100,17 @@ class ConversationActivity : BaseActivity() {
                         runOnUiThread {
                             binding.tvJapanese.text = "$ja\n"
                             binding.tvKorean.text = ko
-
-                            setBackDisabled(false)
-                            isRecording = false
-                            binding.btnBack.isEnabled = true
-                            binding.btnBack.alpha = 1f
                         }
 
                         playBase64Audio(audioBase64)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                } finally {
+                    setBackDisabled(false)
+                    isRecording = false
+                    binding.btnBack.isEnabled = true
+                    binding.btnBack.alpha = 1f
                 }
             }
 
@@ -120,6 +120,7 @@ class ConversationActivity : BaseActivity() {
                     stopRecordingVisuals()
                     binding.btnSpeak.isEnabled = true
                     isRecording = false
+                    binding.btnBack.alpha = 1f
                 }
             }
 
